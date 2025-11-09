@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchButton = document.getElementById("search-button");
   const categoryFilters = document.querySelectorAll(".category-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
 
   // Authentication elements
@@ -66,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentFilter = "all";
   let searchQuery = "";
   let currentDay = "";
+  let currentDifficulty = "";
   let currentTimeRange = "";
 
   // Authentication state
@@ -86,6 +88,12 @@ document.addEventListener("DOMContentLoaded", () => {
       currentDay = activeDayFilter.dataset.day;
     }
 
+    // Initialize difficulty filter
+    const activeDifficultyFilter = document.querySelector(".difficulty-filter.active");
+    if (activeDifficultyFilter) {
+      currentDifficulty = activeDifficultyFilter.dataset.difficulty;
+    }
+
     // Initialize time filter
     const activeTimeFilter = document.querySelector(".time-filter.active");
     if (activeTimeFilter) {
@@ -100,6 +108,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update active class
     dayFilters.forEach((btn) => {
       if (btn.dataset.day === day) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    fetchActivities();
+  }
+
+  // Function to set difficulty filter
+  function setDifficultyFilter(difficulty) {
+    currentDifficulty = difficulty;
+
+    // Update active class
+    difficultyFilters.forEach((btn) => {
+      if (btn.dataset.difficulty === difficulty) {
         btn.classList.add("active");
       } else {
         btn.classList.remove("active");
@@ -404,6 +428,11 @@ document.addEventListener("DOMContentLoaded", () => {
         queryParams.push(`day=${encodeURIComponent(currentDay)}`);
       }
 
+      // Handle difficulty filter
+      if (currentDifficulty) {
+        queryParams.push(`difficulty=${encodeURIComponent(currentDifficulty)}`);
+      }
+
       // Handle time range filter
       if (currentTimeRange) {
         const range = timeRanges[currentTimeRange];
@@ -533,6 +562,13 @@ document.addEventListener("DOMContentLoaded", () => {
       </span>
     `;
 
+    // Create difficulty badge (only if difficulty is specified)
+    const difficultyBadge = details.difficulty ? `
+      <span class="difficulty-badge difficulty-${details.difficulty.toLowerCase()}">
+        ${details.difficulty}
+      </span>
+    ` : '';
+
     // Create capacity indicator
     const capacityIndicator = `
       <div class="capacity-container ${capacityStatusClass}">
@@ -548,6 +584,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     activityCard.innerHTML = `
       ${tagHtml}
+      ${difficultyBadge}
       <h4>${name}</h4>
       <p>${details.description}</p>
       <p class="tooltip">
@@ -678,6 +715,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update current day filter and fetch activities
       currentDay = button.dataset.day;
+      fetchActivities();
+    });
+  });
+
+  // Add event listeners to difficulty filter buttons
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      // Update active class
+      difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      // Update current difficulty filter and fetch activities
+      currentDifficulty = button.dataset.difficulty;
       fetchActivities();
     });
   });
