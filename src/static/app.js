@@ -579,6 +579,27 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      <div class="share-section">
+        <span class="share-label">Share:</span>
+        <div class="share-buttons">
+          <button class="share-button twitter tooltip" data-activity="${name}" data-platform="twitter" aria-label="Share on Twitter">
+            𝕏
+            <span class="tooltip-text">Share on Twitter</span>
+          </button>
+          <button class="share-button facebook tooltip" data-activity="${name}" data-platform="facebook" aria-label="Share on Facebook">
+            f
+            <span class="tooltip-text">Share on Facebook</span>
+          </button>
+          <button class="share-button email tooltip" data-activity="${name}" data-platform="email" aria-label="Share via Email">
+            ✉
+            <span class="tooltip-text">Share via Email</span>
+          </button>
+          <button class="share-button copy tooltip" data-activity="${name}" data-platform="copy" aria-label="Copy Link">
+            🔗
+            <span class="tooltip-text">Copy Link</span>
+          </button>
+        </div>
+      </div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -602,6 +623,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
     deleteButtons.forEach((button) => {
       button.addEventListener("click", handleUnregister);
+    });
+
+    // Add click handlers for share buttons
+    const shareButtons = activityCard.querySelectorAll(".share-button");
+    shareButtons.forEach((button) => {
+      button.addEventListener("click", handleShare);
     });
 
     // Add click handler for register button (only when authenticated)
@@ -777,6 +804,67 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 300);
       }
     });
+  }
+
+  // Handle social sharing
+  function handleShare(event) {
+    const button = event.currentTarget;
+    const activityName = button.dataset.activity;
+    const platform = button.dataset.platform;
+    const activity = allActivities[activityName];
+    
+    if (!activity) {
+      console.error("Activity not found:", activityName);
+      return;
+    }
+
+    // Create share URL and text
+    const shareUrl = window.location.origin + window.location.pathname;
+    const shareText = `Check out ${activityName} at Mergington High School! ${activity.description}`;
+    const shareTitle = `${activityName} - Mergington High School Activities`;
+
+    // Handle different sharing platforms
+    switch (platform) {
+      case "twitter":
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(twitterUrl, "_blank", "width=550,height=420");
+        break;
+
+      case "facebook":
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(facebookUrl, "_blank", "width=550,height=420");
+        break;
+
+      case "email":
+        const emailSubject = encodeURIComponent(shareTitle);
+        const emailBody = encodeURIComponent(`${shareText}\n\nSchedule: ${formatSchedule(activity)}\n\nView more: ${shareUrl}`);
+        window.location.href = `mailto:?subject=${emailSubject}&body=${emailBody}`;
+        break;
+
+      case "copy":
+        // Copy link to clipboard
+        const textToCopy = `${shareText}\n\n${shareUrl}`;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          // Show visual feedback
+          button.classList.add("copied");
+          const originalTooltip = button.querySelector(".tooltip-text").textContent;
+          button.querySelector(".tooltip-text").textContent = "Copied!";
+          
+          setTimeout(() => {
+            button.classList.remove("copied");
+            button.querySelector(".tooltip-text").textContent = originalTooltip;
+          }, 2000);
+          
+          showMessage("Link copied to clipboard!", "success");
+        }).catch((err) => {
+          console.error("Failed to copy:", err);
+          showMessage("Failed to copy link. Please try again.", "error");
+        });
+        break;
+
+      default:
+        console.error("Unknown share platform:", platform);
+    }
   }
 
   // Handle unregistration with confirmation
