@@ -664,3 +664,89 @@ footer {
 #logout-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
+
+/* Social Share Buttons */
+.share-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 8px;
+}
+
+.share-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.share-button {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.share-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.share-button.twitter:hover {
+  background-color: #1da1f2;
+  border-color: #1da1f2;
+  color: white;
+}
+
+.share-button.facebook:hover {
+  background-color: #4267b2;
+  border-color: #4267b2;
+  color: white;
+}
+
+.share-button.email:hover {
+  background-color: #ea4335;
+  border-color: #ea4335;
+  color: white;
+}
+
+.share-button.copy:hover {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+/* Share tooltip */
+.share-button .tooltip-text {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.share-button:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Copy success feedback */
+.share-button.copied {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: white;
+}
